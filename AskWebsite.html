@@ -8,7 +8,7 @@
     body {
       margin: 0;
       overflow: hidden;
-      background-color: #ecb3ff;
+      background: linear-gradient(135deg, #ffe6f0, #ffb3d9);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -21,22 +21,20 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: -1; /* Canvas bleibt im Hintergrund */
+      z-index: -1;
     }
     #question {
       text-align: center;
       font-family: "Arial", sans-serif;
-      font-size: 50px; /* Text größer machen */
-      color: #cc3385; /* Dunkleres Pink */
+      font-size: 50px;
+      color: #cc0052;
       position: absolute;
-      top: 60%;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      z-index: 1; /* Text bleibt im Vordergrund */
-      -webkit-background-clip: text;
-      background-clip: text;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Schatten für besseren Kontrast */
-      -webkit-text-stroke: 1px black; /* Schwarze Umrandung */
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+      -webkit-text-stroke: 1px white;
     }
     .btn {
       padding: 15px 30px;
@@ -45,35 +43,27 @@
       border: none;
       cursor: pointer;
       border-radius: 5px;
-      background-color: #ff66cc;
+      background-color: #ff6699;
       color: white;
-      transition: background-color 0.3s ease;
-      z-index: 1;
+      transition: transform 0.3s, background-color 0.3s;
     }
     .btn:hover {
-      background-color: #ff3385;
+      transform: scale(1.1);
+      background-color: #ff3366;
     }
-
-    /* Responsive styles für kleine Bildschirme wie Handys und Tablets */
-    @media (max-width: 768px) {
-      #question {
-        font-size: 40px; /* Kleinere Schriftgröße für Tablets */
-        top: 50%;
-      }
-      .btn {
-        padding: 12px 24px;
-        font-size: 16px;
-      }
+    .response {
+      text-align: center;
+      font-family: "Arial", sans-serif;
+      color: #cc0052;
+      z-index: 1;
+      margin-top: 20px;
     }
-    @media (max-width: 480px) {
-      #question {
-        font-size: 32px; /* Noch kleinere Schriftgröße für Handys */
-        top: 45%;
-      }
-      .btn {
-        padding: 10px 20px;
-        font-size: 14px;
-      }
+    .response img {
+      width: 120px; /* Kleinere Breite */
+      margin: 5px;  /* Platz zwischen Bildern */
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -83,8 +73,25 @@
 
   <div id="question">
     <p>Will you be my girlfriend?</p>
-    <button class="btn" onclick="answer('yes')">Yes</button>
-    <button class="btn" onclick="answer('no')">No</button>
+    <button class="btn" id="yesBtn">Yes</button>
+    <button class="btn" id="noBtn">No</button>
+  </div>
+
+  <div class="response hidden" id="yesResponse">
+    <div>
+      <img src="img/jaa.jpg" alt="Image 1">
+      <img src="img/herzzz.jpeg" alt="Image 2">
+    </div>
+    <p>yeepee ich liebe dich Charlotte jaaaaaa</p>
+    <div>
+      <img src="img/herzzz.jpeg" alt="Image 3">
+      <img src="img/yey.jpg" alt="Image 4">
+    </div>
+  </div>
+
+  <div class="response hidden" id="noResponse">
+    <img src="img/sad.jpeg" alt="Sad Image">
+    <p>:</p>
   </div>
 
   <script>
@@ -93,82 +100,64 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Funktion für Herzform mit dünnerer weißer Umrandung
+    const hearts = [];
+    const colors = ["#ff3366", "#ff6699", "#ff99cc", "#ffa3d6"];
+
     function drawHeart(x, y, size, color) {
       ctx.fillStyle = color;
-      ctx.strokeStyle = "white"; // Weiße Umrandung
-      ctx.lineWidth = 2; // Dünnere Umrandung
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
       ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
       ctx.closePath();
       ctx.fill();
-      ctx.stroke(); // Umrandung zeichnen
     }
 
-    // Funktion für Blume
-    function drawFlower(x, y, size) {
-      ctx.fillStyle = "yellow"; // Mittelpunkt
-      ctx.beginPath();
-      ctx.arc(x, y, size / 5, 0, Math.PI * 2);
-      ctx.fill();
-
-      const petalColors = ["red", "pink", "orange"];
-      for (let i = 0; i < 6; i++) {
-        const angle = (Math.PI / 3) * i;
-        const petalX = x + Math.cos(angle) * size;
-        const petalY = y + Math.sin(angle) * size;
-
-        ctx.fillStyle = petalColors[i % petalColors.length];
-        ctx.beginPath();
-        ctx.arc(petalX, petalY, size / 3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // Animation Loop
-    let hearts = [];
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Herzen erzeugen
+    function createHearts() {
       hearts.push({
         x: Math.random() * canvas.width,
         y: canvas.height + 50,
         size: Math.random() * 20 + 10,
-        color: "red", // Herzen in Rot
+        color: colors[Math.floor(Math.random() * colors.length)],
         speed: Math.random() * 2 + 1,
       });
+    }
 
-      // Herzen zeichnen
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (Math.random() < 0.05) createHearts();
+
       for (let i = 0; i < hearts.length; i++) {
         const heart = hearts[i];
         drawHeart(heart.x, heart.y, heart.size, heart.color);
         heart.y -= heart.speed;
 
-        // Entfernen, wenn außerhalb des Bildschirms
         if (heart.y < -50) {
           hearts.splice(i, 1);
           i--;
         }
       }
 
-      // Blume zeichnen
-
       requestAnimationFrame(animate);
     }
 
     animate();
 
-    // Antwort auf die Frage und Weiterleitung
-    function answer(response) {
-      if (response === 'yes') {
-        window.location.href = "https://www.example.com/yes"; // URL für "Ja"
-      } else {
-        window.location.href = "https://www.example.com/no"; // URL für "Nein"
-      }
-    }
+    document.getElementById('yesBtn').addEventListener('click', () => {
+      document.getElementById('question').classList.add('hidden');
+      document.getElementById('yesResponse').classList.remove('hidden');
+    });
+
+    document.getElementById('noBtn').addEventListener('click', () => {
+      document.getElementById('question').classList.add('hidden');
+      document.getElementById('noResponse').classList.remove('hidden');
+    });
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
