@@ -59,16 +59,21 @@
       margin-top: 20px;
     }
     .response img {
-      width: 120px; /* Kleinere Breite */
-      margin: 5px;  /* Platz zwischen Bildern */
+      width: 120px;
+      margin: 5px;
     }
     .hidden {
       display: none;
     }
   </style>
 </head>
-<body>
 
+
+<img src="img/herz.jpeg" alt="">
+<img src="img/jaa.jpg" alt="">
+<img src="img/yey.jpg" alt="">
+<img src="img/sad.jpeg" alt="">
+<body>
   <canvas id="valentineCanvas"></canvas>
 
   <div id="question">
@@ -79,19 +84,22 @@
 
   <div class="response hidden" id="yesResponse">
     <div>
-      <img src="img/jaa.jpg" alt="Image 1">
-      <img src="img/herzzz.jpeg" alt="Image 2">
+      <img src="img/herz.jpeg" alt="Image 1">
+      <img src="img/jaa.jpg" alt="Image 2">
     </div>
-    <p>yeepee ich liebe dich Charlotte jaaaaaa</p>
+    <p>yeeepeee ich liebe dich Charlotte </p>
     <div>
-      <img src="img/herzzz.jpeg" alt="Image 3">
-      <img src="img/yey.jpg" alt="Image 4">
+      <img src="img/yey.jpg" alt="Image 3">
+      <img src="img/herz.jpeg" alt="Image 4">
     </div>
+    <button class="btn" id="backBtnYes">Back</button>
   </div>
 
   <div class="response hidden" id="noResponse">
     <img src="img/sad.jpeg" alt="Sad Image">
-    <p>:</p>
+    <p>waaaaas
+    </p>
+    <button class="btn" id="backBtnNo">Back</button>
   </div>
 
   <script>
@@ -152,6 +160,16 @@
     document.getElementById('noBtn').addEventListener('click', () => {
       document.getElementById('question').classList.add('hidden');
       document.getElementById('noResponse').classList.remove('hidden');
+    });
+
+    document.getElementById('backBtnYes').addEventListener('click', () => {
+      document.getElementById('yesResponse').classList.add('hidden');
+      document.getElementById('question').classList.remove('hidden');
+    });
+
+    document.getElementById('backBtnNo').addEventListener('click', () => {
+      document.getElementById('noResponse').classList.add('hidden');
+      document.getElementById('question').classList.remove('hidden');
     });
 
     window.addEventListener("resize", () => {
